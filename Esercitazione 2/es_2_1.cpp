@@ -26,5 +26,4 @@ void es_2_1()
     h->FillRandom("gss", 5000);
     c->cd();
     h->Draw();
-
 }
