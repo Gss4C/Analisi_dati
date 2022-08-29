@@ -32,9 +32,17 @@ vector<Double_t> data_from_file(string filename)
     }
     return data;
 }
-TF1 *extended_likelihood(int s, int b, vector<Double_t> x, vector<Double_t> theta)
+TF1 *extended_likelihood(int s, int b, int N, vector<Double_t> x, vector<Double_t> theta)
 {
-
+    //Considero che s+b=N
+    TF1 *likelihood=new TF1("likelihood", "")
+    /* Readible formula
+        -2 *
+        (
+            - N - N * TMath::Log(N) - N +
+            
+        )
+    */
 }
 //Macro
 void Exercise_B_histo_fit()
@@ -48,6 +56,6 @@ void Exercise_B_histo_fit()
     for(int s=1; s<=N; s++)
     {
         int b=N-s;
-        //Da qui dovrebbe partire il calcolo della likelihood
+        //Da qui dovrebbe partire il calcolo della likelihood, perché in teoria ho tutto il necessario
     }
 }
