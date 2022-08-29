@@ -32,17 +32,24 @@ vector<Double_t> data_from_file(string filename)
     }
     return data;
 }
-TF1 *extended_likelihood(int s, int b, int N, vector<Double_t> x, vector<Double_t> theta)
+Double_t *extended_likelihood(int s, int b, int N, vector<Double_t> x, vector<Double_t> theta)
 {
     //Considero che s+b=N
-    TF1 *likelihood=new TF1("likelihood", "")
-    /* Readible formula
-        -2 *
-        (
-            - N - N * TMath::Log(N) - N +
-            
-        )
-    */
+    TF1 *pdfs_xi=new TF1("pdfs_xi", "-2* ([0]/(sqrt(2*TMath::Pi()*[4]*[4])) * TMath::Exp(-((x - [3]) * (x - [3])) / (2 *[4] *[4])) + [1]/([2]) * TMath::Exp(-x/[2]))");
+        /* Readible formula
+            -2 *
+            (
+                [0]/(sqrt(2*TMath::Pi()*[4]*[4])) * TMath::Exp(-((x - [3]) * (x - [3])) / (2 *[4] *[4])) + 
+                [1]/([2]) * TMath::Exp(-x/[2])
+            )
+        */
+    pdfs_xi->SetParameters(s,b,theta.at(2),theta.at(0),theta.at(1),N);
+    Double_t sum = 0;
+    for(int i=0 ; i<=N ; i++)
+    {
+        sum += pdfs_xi->Eval(x.at(i));
+    }
+    
 }
 //Macro
 void Exercise_B_histo_fit()
