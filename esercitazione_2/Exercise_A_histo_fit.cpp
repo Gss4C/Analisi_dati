@@ -36,22 +36,7 @@ vector<Double_t> data_from_file(string filename)
 
 void Exercise_A_histo_fit()
 {
-    //The following lines (commented) was the first try, with only one dataset
-    /*
-    TF1 *pdf = new TF1("pdf" , "1/([0]+[1]) * TMath::Poisson( [5] , [0]+[1]) * ( [0]/(sqrt(2*TMath::Pi()*[4]*[4])) * TMath::Exp(-((x - [3]) * (x - [3])) / (2 *[4] *[4])) + [1]/([2]) * TMath::Exp(-x/[2]))", 0 , 1000); 
-    TCanvas *c = new TCanvas();
-    TH1F *h1 = histo_fromfile("exercise_Likelihood_1"); 
-    pdf->SetParameters(250, 800, 200, 400, 70, 1223); //Qui setto i parametri del modello 1 a random per provare, non sono importanti perché tanto vanno cambiati
-    pdf->FixParameter(5, 1223);
-    pdf->FixParameter(4, 70);
-    pdf->FixParameter(3, 400);
-    pdf->FixParameter(2, 200);
-    h1->Fit(pdf, "L");
-    // double scale_factor = 1/(h1->Integral());
-    h1->Scale(0.000001);
-    h1->Draw("");
-    */
-
+    
     TF1 *pdf = new TF1("pdf" , "1/([0]+[1]) * TMath::Poisson( [5] , [0]+[1]) * ( [0]/(sqrt(2*TMath::Pi()*[4]*[4])) * TMath::Exp(-((x - [3]) * (x - [3])) / (2 *[4] *[4])) + [1]/([2]) * TMath::Exp(-x/[2]))", 0 , 1000);
 
     for(int i=1 ; i<5 ; i++ )
