@@ -352,3 +352,21 @@ def mass_z_range(file, tree, var="muontracks_chi2", n_bin=100, min=0, max=100 ,o
             h_ss.Scale(1/h_ss.Integral())
             h_ss.Draw("SAME,hist")
             return c, h_os, h_ss
+
+
+
+for i in range(dytr.GetEntries()):
+    dytr.GetEntry(i)
+    muons = pr.get_collection(dytr, "muontracks")
+    for mi in range(len(muons)):
+        for mj in range(mi+1): #devo mettere che arrivi ad essere uguale a mi e non minore
+            if(dytr.muontracks_chi2<1.2 and dytr.muontracks_chi2>0.6):
+                if(dytr.muontracks_dz<0.003):
+                    if(dytr.muontracks_dB<0.0015):
+                        if(dytr.muontracks_isoDeposits<2):
+                            p4t=muons[mj].p4
+            elif(dytr.muontracks_chi2<1.8 and dytr.muontracks_chi2>0.2):
+                if(dytr.muontracks_dz<0.003):
+                    if(dytr.muontracks_dB<0.0015):
+                        if(dytr.muontracks_isoDeposits<2):
+            
