@@ -10,6 +10,10 @@ class particle:
         self.p4=ROOT.TLorentzVector()
         self.p4.SetPtEtaPhiE(pt,eta,phi,e)
 
+def eff(n_pass,n_fail):
+    epsilon = n_pass /(n_pass+n_fail)*100
+    return epsilon
+
 def help_plz(funx="mass_z_range"):
     if(funx == "mass_z_range"):
         print("Funzione che fa il confronto fra quel che si vuole considerare nois e quel che è il segnale di interesse, sviluppata con lo scopo di aiutare l'individuazione dei tagli migliori\n Parametri in ingresso:")
