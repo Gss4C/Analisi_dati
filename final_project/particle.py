@@ -10,9 +10,12 @@ class particle:
         self.p4=ROOT.TLorentzVector()
         self.p4.SetPtEtaPhiE(pt,eta,phi,e)
 
-def eff(n_pass,n_fail):
-    epsilon = n_pass /(n_pass+n_fail)*100
-    return epsilon
+def eff(ns,np):
+    rs=np/ns 
+    n_ps=np*rs
+    es=n_ps/ns
+    return es
+
 
 def help_plz(funx="mass_z_range"):
     if(funx == "mass_z_range"):
@@ -356,8 +359,3 @@ def mass_z_range(file, tree, var="muontracks_chi2", n_bin=100, min=0, max=100 ,o
             h_ss.Scale(1/h_ss.Integral())
             h_ss.Draw("SAME,hist")
             return c, h_os, h_ss
-
-
-
-
-            
