@@ -16,14 +16,6 @@ def eff(ns,np):
     es=n_ps/ns
     return es
 
-
-def help_plz(funx="mass_z_range"):
-    if(funx == "mass_z_range"):
-        print("Funzione che fa il confronto fra quel che si vuole considerare nois e quel che è il segnale di interesse, sviluppata con lo scopo di aiutare l'individuazione dei tagli migliori\n Parametri in ingresso:")
-        print("file = Nome del file in lettura \n tree=nome del tree \n var=Selezionare la caratteristica che voglio graficare \n n:bins, min e max \n")
-        print("Parametro OS:\n 0 -> Stampo istogrammi di confronto fra tutti i muoni e i muoni intorno al range \n 1-> Stampo confronto fra tutti i muoni e quelli OS nel range \n 2-> Stampo confronto fra muoni OS nel range e tutti gli SS")
-
-
 def get_particle(tree="tree", var="muontracks", index=0):
     flav_dict={"muontracks":13, "electrons":11}
     p=particle(getattr(tree,var+"_pt")[index],
@@ -37,6 +29,16 @@ def get_particle(tree="tree", var="muontracks", index=0):
 def get_collection(tree="tree", var="muontracks"):
     particles=[get_particle(tree,var,i) for i in range (getattr(tree,var+"_size"))]
     return particles
+
+def two_hist(c,h1,h2):
+    c=ROOT.TCanvas()
+    h1.Scale(1/h1.Integral())
+    h2.Scale(1/h2.Integral())
+    c.Draw()
+    h1.SetLineColor(ROOT.kRed)
+    h2.Draw("hist")
+    h1.Draw("SAME,hist")
+    return c,h1,h2
 
 def plot_part_mass(file, tree, var="muontracks"):
     file.cd()
