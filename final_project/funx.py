@@ -91,7 +91,7 @@ def cut_find_small(tree,h_met,h_je,h_jpt,h_mass):
             muons = pt.get_collection(tree, "muontracks")
             passing = 0
             for mi in range(len(muons)):
-                if(tree.muontracks_dz[mi]<0.005 and tree.muontracks_dB[mi]<0.003 and tree.muontracks_isoDeposits[mi]<4):
+                if(tree.muontracks_dz[mi]<0.014 and tree.muontracks_dB[mi]<0.007 and tree.muontracks_isoDeposits[mi]<9):
                     for mj in range(len(muons)):
                         if(mi!=mj and tree.muontracks_dz[mj]<0.014 and tree.muontracks_dB[mj]<0.007 and tree.muontracks_isoDeposits[mj]<9):
                             passing = 1
@@ -129,13 +129,58 @@ def cut_make(tree,h_met,h_je,h_jpt,h_mass):
             muons = pt.get_collection(tree, "muontracks")
             passing = 0
             for mi in range(len(muons)):
-                if(tree.muontracks_dz[mi]<0.005 and tree.muontracks_dB[mi]<0.003 and tree.muontracks_isoDeposits[mi]<4):
+                if(tree.muontracks_dz[mi]<0.014 and tree.muontracks_dB[mi]<0.007 and tree.muontracks_isoDeposits[mi]<9):
                     for mj in range(len(muons)):
                         if(mi!=mj and tree.muontracks_dz[mj]<0.014 and tree.muontracks_dB[mj]<0.007 and tree.muontracks_isoDeposits[mj]<9):
                             passing = 1
                             s_mu = (muons[mi].p4+muons[mj].p4).M()
                             h_mass.Fill(s_mu)
             if(passing==1):
+                #Taglio in distanza angolare jets-leptons + solo 2 jets più energetici
+                jets = pt.get_collection(tree, "jets") 
+                if(len(jets)>=2):
+                    clean_jets = []             #jets con distanza angolare che ci piace
+                    sel_j = []                  #solo i 2 più energetici di ogni clean_jets
+                    for jj in range(len(jets)): #Selezione jets validi
+                        dists=[]                #array di distanze angolari
+                        for mm in range(len(muons)):
+                            d = ROOT.TMath.Sqrt( ((muons[mm].eta - jets[jj].eta)*(muons[mm].eta - jets[jj].eta)) + ((muons[mm].phi - jets[jj].phi)*(muons[mm].phi -jets[jj].phi)) )
+                            dists.append(d)
+                        if(min(dists) > 0.4):           #imposizione distanza minima, solo se la minima è soperiroe a 0.4 vado avanti
+                            clean_jets.append(jets[jj])
+                    if(len(clean_jets)>1):              #non ha senso considerare l'evento se nella selezione resta un solo jet
+                        for p in range(2):              #solo 2 per evento
+                            sel_j.append(clean_jets[p]) #questi sono i jets che ci piacciono
+
+                        if(tree.met_pt[0]>=35):
+                            top = 0
+                            if(sel_j[0].pt >= 45 and sel_j[1].pt >= 45 ):
+                                top = 1
+                            if(top == 1):
+                                n_events = n_events + 1
+                                h_met.Fill(tree.met_pt[0])
+                                for jet in range(len(sel_j)):
+                                    h_je.Fill(sel_j[jet].e)
+                                    h_jpt.Fill(sel_j[jet].pt)
+    n_jet = h_jpt.Integral()
+    n_met = h_met.Integral()
+    return h_met,h_je,h_jpt,h_mass, n_jet, n_met, n_events
+
+def cut_make_revert(tree,h_met,h_je,h_jpt,h_mass):
+    n_events=0
+    for i in range(tree.GetEntries()):
+        tree.GetEntry(i)
+        if(tree.muontracks_size >=2):
+            muons = pt.get_collection(tree, "muontracks")
+            passing = 0
+            for mi in range(len(muons)):
+                if(tree.muontracks_dz[mi]<0.014 and tree.muontracks_dB[mi]<0.007 and tree.muontracks_isoDeposits[mi]<9):
+                    for mj in range(len(muons)):
+                        if(mi!=mj and tree.muontracks_dz[mj]<0.014 and tree.muontracks_dB[mj]<0.007 and tree.muontracks_isoDeposits[mj]<9):
+                            passing = 1
+                            s_mu = (muons[mi].p4+muons[mj].p4).M()
+                            h_mass.Fill(s_mu)
+            if(passing==0):
                 #Taglio in distanza angolare jets-leptons + solo 2 jets più energetici
                 jets = pt.get_collection(tree, "jets") 
                 if(len(jets)>=2):
