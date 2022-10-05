@@ -166,9 +166,8 @@ def cut_make(tree,h_met,h_je,h_jpt,h_mass):
     n_met = h_met.Integral()
     return h_met,h_je,h_jpt,h_mass, n_jet, n_met, n_events
 
-def cut_make_revert(tree,h_met,h_je,h_jpt,h_mass,verbose=False):
+def cut_make_revert(tree,verbose=False): #devo sistemare in modo che non riempia un milione di histo
     n_events=0
-    n_bar_passing=0
     for i in range(tree.GetEntries()):
         tree.GetEntry(i)
         if(verbose):
@@ -182,10 +181,7 @@ def cut_make_revert(tree,h_met,h_je,h_jpt,h_mass,verbose=False):
                     for mj in range(len(muons)):
                         if(mi!=mj and tree.muontracks_dz[mj]<0.014 and tree.muontracks_dB[mj]<0.007 and tree.muontracks_isoDeposits[mj]<9):
                             passing = 1
-                            s_mu = (muons[mi].p4+muons[mj].p4).M()
-                            h_mass.Fill(s_mu)
             if(passing==0):
-                n_bar_passing=n_bar_passing+1
                 if(verbose): 
                     if(i%100==0):
                         print("entry passing",i, "npassing=",n_bar_passing)
@@ -199,8 +195,8 @@ def cut_make_revert(tree,h_met,h_je,h_jpt,h_mass,verbose=False):
                         for mm in range(len(muons)):
                             d = ROOT.TMath.Sqrt( ((muons[mm].eta - jets[jj].eta)*(muons[mm].eta - jets[jj].eta)) + ((muons[mm].phi - jets[jj].phi)*(muons[mm].phi -jets[jj].phi)) )
                             dists.append(d)
-                        if(min(dists) > 0.4):           #imposizione distanza minima, solo se la minima è soperiroe a 0.4 vado avanti
-                            clean_jets.append(jets[jj])
+                        #if(min(dists) > 0.4):           #Per il revert cut non vogliamo togliere i jet sporchi
+                        clean_jets.append(jets[jj])
                     if(len(clean_jets)>1):              #non ha senso considerare l'evento se nella selezione resta un solo jet
                         for p in range(2):              #solo 2 per evento
                             sel_j.append(clean_jets[p]) #questi sono i jets che ci piacciono
@@ -211,13 +207,8 @@ def cut_make_revert(tree,h_met,h_je,h_jpt,h_mass,verbose=False):
                                 top = 1
                             if(top == 1):
                                 n_events = n_events + 1
-                                h_met.Fill(tree.met_pt[0])
-                                for jet in range(len(sel_j)):
-                                    h_je.Fill(sel_j[jet].e)
-                                    h_jpt.Fill(sel_j[jet].pt)
-    n_jet = h_jpt.Integral()
-    n_met = h_met.Integral()
-    return h_met,h_je,h_jpt,h_mass, n_jet, n_met, n_events
+
+    return n_events
 
 def n4(var = "dy"):
     L = 3.1 # pb^-1
@@ -230,18 +221,3 @@ def n4(var = "dy"):
         w_norm = 1/5000 * L * sigma_tt
 
     return w_norm
-
-"""def n4(n_jet, n_met, var = "dy"): #vecchia versione rotta
-L = 3.1 # pb^-1
-sigma_dy = 3048 #pb
-sigma_tt = 17.48 #pb
-w_norm_jet = 0
-w_norm_met = 0
-if(var == "dy"):
-    w_norm_jet = 1/n_jet * L * sigma_dy
-    w_norm_met = 1/n_met * L * sigma_dy
-if(var == "tt"):
-    w_norm_jet = 1/n_jet * L * sigma_tt
-    w_norm_met = 1/n_met * L * sigma_tt
-
-return w_norm_jet,w_norm_met"""
